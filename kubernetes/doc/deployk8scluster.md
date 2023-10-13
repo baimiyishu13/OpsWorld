@@ -1,6 +1,35 @@
 # Kubernetes + KubeSphere
+- [Kubernetes + KubeSphere](#kubernetes--kubesphere)
+  - [部署局点: 宁波和河南生产环境](#部署局点-宁波和河南生产环境)
+  - [准备工作](#准备工作)
+      - [Harbor 部署](#harbor-部署)
+      - [镜像](#镜像)
+      - [3）安装ansible配置](#3安装ansible配置)
+  - [GFS部署(可选)](#gfs部署可选)
+  - [初始化环境](#初始化环境)
+      - [1）修改hosts文件](#1修改hosts文件)
+      - [2）sudo账户（可选）](#2sudo账户可选)
+      - [3）关闭swap、防火墙、selinux、修改limit](#3关闭swap防火墙selinux修改limit)
+      - [4）基础软件安装](#4基础软件安装)
+      - [5）内核模块加载](#5内核模块加载)
+      - [6）安装Docker](#6安装docker)
+      - [7）内核配置](#7内核配置)
+      - [8）NFS挂载（可选）](#8nfs挂载可选)
+      - [9）时间同步](#9时间同步)
+  - [高可用配置](#高可用配置)
+      - [1）Keepalived 和 HAproxy](#1keepalived-和-haproxy)
+  - [初始化集群](#初始化集群)
+    - [kubeadm + ks](#kubeadm--ks)
+      - [kubeadm](#kubeadm)
+      - [calico安装](#calico安装)
+      - [NFS SC (可选)](#nfs-sc-可选)
+      - [GFS](#gfs)
+      - [KS](#ks)
+    - [KubeKey](#kubekey)
+      - [离线安装集群方式](#离线安装集群方式)
+      - [开始安装](#开始安装)
 
-[Toc]
+
 
 ------
 
