@@ -120,7 +120,6 @@ yum install -y ansible &>/dev/null
 sed -i 's/^#host_key_checking = False/host_key_checking = False/' /etc/ansible/ansible.cfg
 sed -i '/^\[defaults\]$/a interpreter_python = auto_legacy_silent' /etc/ansible/ansible.cfg
 EOF
-
 bash init_ansible.sh
 ```
 
@@ -294,12 +293,11 @@ EOF
 shell脚本 
 
 ```
-cat <<EOF > sudo.sh
 #!/bin/bash
 
 # 设置要创建的用户名和密码
 username="wlznhpt"
-password="*-*"
+password="Wgzyc#@2017"
 
 # 创建用户并设置密码
 useradd -m "${username}"
@@ -313,9 +311,6 @@ echo "${username} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 # 重新加载sudoers文件以使更改生效
 visudo -c -f /etc/sudoers && echo "sudoers file is valid" || echo "sudoers file is NOT valid"
-
-EOF
-bash sudo.sh
 ```
 
 #### 3）关闭swap、防火墙、selinux、修改limit
