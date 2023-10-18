@@ -33,7 +33,6 @@
 
 ------
 
-## 部署局点: 宁波和河南生产环境
 
 ## 准备工作
 
@@ -300,7 +299,7 @@ cat <<EOF > sudo.sh
 
 # 设置要创建的用户名和密码
 username="wlznhpt"
-password="Wgzyc#@2017"
+password="*-*"
 
 # 创建用户并设置密码
 useradd -m "${username}"
