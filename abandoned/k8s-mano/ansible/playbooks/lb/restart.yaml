@@ -1,0 +1,5 @@
+---
+- name: 重启 HAProxy 和 Keepalived
+  hosts: all
+  become: true
+  tasks:

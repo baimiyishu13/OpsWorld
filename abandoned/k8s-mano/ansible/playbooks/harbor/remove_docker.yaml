@@ -1,0 +1,15 @@
+---
+- name: 卸载 Docker
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: 停止 Docker 服务
+      service:
+        name: docker
+        state: stopped
+
+    - name: 卸载 Docker 包
+      dnf:
+        name: docker
+        state: absent

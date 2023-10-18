@@ -1,0 +1,96 @@
+# 安装 NFS
+---
+- name: 安装 nfs-utils 和 rpcbind 并创建目录并修改 /etc/fstab
+  hosts: all
+  become: true
+  tasks:
+    - name: 安装 nfs-utils 和 rpcbind
+      dnf:
+        name:
+          - nfs-utils
+          - rpcbind
+        state: present
+
+    - name: 启动 rpcbind 服务
+      service:
+        name: rpcbind
+        state: started
+        enabled: true
+
+    - name: 启动 nfs 服务
+      service:
+        name: nfs
+        state: started
+        enabled: true
+
+    - name: 创建目录
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0777'
+      with_items:
+        - /dockerdata-nfs2
+        - /dockerdata-nfs
+
+    - name: 追加 NFS 挂载到 /etc/fstab
+      lineinfile:
+        path: /etc/fstab
+        line: "{{ item }}"
+        insertafter: EOF
+      with_items:
+        - "172.16.137.130:/k8s-log   /dockerdata-nfs nfs defaults  0 0"
+        - "172.16.137.130:/k8s-data  /dockerdata-nfs2 nfs defaults  0 0"
+      notify:
+        - 重启 NFS 服务
+        - 重启 RPCbind 服务
+
+  handlers:
+    - name: 重启 NFS 服务
+      service:
+        name: nfs
+        state: restarted
+
+    - name: 重启 RPCbind 服务
+      service:
+        name: rpcbind
+        state: restarted
+
+
+- name: master03 创建目录并设置权限和修改 /etc/exports
+  hosts: master03
+  become: true
+  tasks:
+    - name: 创建目录
+      file:
+        path: "{{ item.path }}"
+        state: directory
+        mode: "{{ item.mode }}"
+      loop:
+        - { path: /k8s-data, mode: '0777' }
+        - { path: /k8s-log, mode: '0777' }
+
+    - name: 追加 NFS 内容到 /etc/exports
+      lineinfile:
+        path: /etc/exports
+        line: "{{ item }}"
+        insertafter: EOF
+      with_items:
+        - "/k8s-log  172.16.137.0/24(rw,sync,no_root_squash,no_subtree_check)"
+        - "/k8s-data 172.16.137.0/24(rw,sync,no_root_squash,no_subtree_check)"
+      notify:
+        - 重启 NFS 服务
+        - 重启 RPCbind 服务
+
+    - name: 执行 mount -a 命令
+      command: mount -a
+
+  handlers:
+    - name: 重启 NFS 服务
+      service:
+        name: nfs
+        state: restarted
+
+    - name: 重启 RPCbind 服务
+      service:
+        name: rpcbind
+        state: restarted

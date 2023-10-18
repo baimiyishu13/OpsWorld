@@ -1,0 +1,26 @@
+---
+- name: 创建用户和配置sudo免密
+  hosts: all
+  become: true
+  tasks:
+    - name: 创建用户
+      user:
+        name: "wlznhpt"
+        shell: /bin/bash
+        createhome: yes
+
+    - name: 设置密码
+      user:
+        name: "wlznhpt"
+        password: "h&MnEGHT"
+      become_user: root
+      args:
+        password: "h&MnEGHT"
+
+    - name: 配置sudo免密
+      lineinfile:
+        dest: /etc/sudoers
+        line: "wlznhpt ALL=(ALL) NOPASSWD:ALL"
+        validate: "visudo -cf %s"
+        state: present
+      become_user: root

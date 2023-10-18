@@ -1,0 +1,23 @@
+---
+- name: 安装 Docker
+  hosts: all
+  become: true
+  tasks:
+    # - name: 安装所需软件包
+    #   package:
+    #     name:
+    #       - dnf-plugins-core  # 安装 dnf 插件核心包
+    #       - python3-dnf  # 安装 Python3 dnf 包
+    #     state: present
+
+    - name: 安装 Docker 引擎
+      dnf:
+        name:
+          - docker  # 安装 Docker 引擎
+        state: present
+
+    - name: 启动并启用 Docker 服务
+      service:
+        name: docker  # Docker 服务名称
+        state: started  # 启动服务
+        enabled: true  # 设置服务开机自启动

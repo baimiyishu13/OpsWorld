@@ -128,7 +128,7 @@ bash init_ansible.sh
 生成 Ansible 的主机清单文件 `/etc/ansible/hosts`。这个清单文件定义了一组主机及其相关变量，参考一下示例：
 
 ```
-cat <<EOF > a
+cat <<EOF > /etc/ansible/hosts
 [all]
 c3-master1 ansible_host=10.232.23.157
 c3-master2 ansible_host=10.232.23.131 
@@ -230,22 +230,21 @@ EOF
 
 ```
 cat <<EOF > hosts-all.yaml
-name: Append /etc/hosts
-hosts: all
-become: true
-gather_facts: false
-tasks:
-  - name: Append /etc/hosts
-    lineinfile:
-      dest: /etc/hosts
-      line: "{{ item.ip }} {{ item.hostname }}"
-    loop:
-      - { ip: "10.209.8.66", hostname: "mirrors.bclinux.org" }
-      - { ip: "10.232.23.157", hostname: "c3-master1" }
-      - { ip: "10.232.23.131", hostname: "c3-master2" }
-      - { ip: "10.232.23.134", hostname: "c3-master3" }
-      - { ip: "10.232.23.156", hostname: "c3-node1" }
-
+- name: Append /etc/hosts
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Append /etc/hosts
+      lineinfile:
+        dest: /etc/hosts
+        line: "{{ item.ip }} {{ item.hostname }}"
+      loop:
+        - { ip: "10.209.8.66", hostname: "mirrors.bclinux.org" }
+        - { ip: "10.232.23.157", hostname: "c3-master1" }
+        - { ip: "10.232.23.131", hostname: "c3-master2" }
+        - { ip: "10.232.23.134", hostname: "c3-master3" }
+        - { ip: "10.232.23.156", hostname: "c3-node1" }
 EOF
 ```
 
@@ -296,6 +295,7 @@ EOF
 shell脚本 
 
 ```
+cat <<EOF > sudo.sh
 #!/bin/bash
 
 # 设置要创建的用户名和密码
@@ -303,17 +303,20 @@ username="wlznhpt"
 password="Wgzyc#@2017"
 
 # 创建用户并设置密码
-useradd -m "$username"
-echo "$username:$password" | chpasswd
+useradd -m "${username}"
+echo "$username:${password}" | chpasswd
 
 # 添加用户到wheel组
-usermod -aG wheel "$username"
+usermod -aG wheel "${username}"
 
 # 配置sudoers
-echo "$username ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+echo "${username} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 # 重新加载sudoers文件以使更改生效
 visudo -c -f /etc/sudoers && echo "sudoers file is valid" || echo "sudoers file is NOT valid"
+
+EOF
+bash sudo.sh
 ```
 
 #### 3）关闭swap、防火墙、selinux、修改limit
@@ -441,7 +444,7 @@ EOF
 ```
 cat <<EOF > /etc/docker/daemon.json
 { 
-  "data-root": "/data/docker",
+  "data-root": "/data/docker/data-root",
   "exec-opts": ["native.cgroupdriver=systemd"],
   "log-driver": "json-file",
   "insecure-registries":["172.32.165.74:8080"],
@@ -455,6 +458,26 @@ cat <<EOF > /etc/docker/daemon.json
 }
 EOF
 ```
+
+```
+cat <<EOF > /etc/docker/daemon.json
+{ 
+  "data-root": "/data/docker/data-root",
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "insecure-registries":["mirrors.com:80"],
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "storage-driver": "overlay2",
+  "storage-opts": [
+    "overlay2.override_kernel_check=true"
+  ]
+}
+EOF
+```
+
+
 
 用于在目标主机上安装和配置 Docker（19.03.13版本：
 
@@ -1258,3 +1281,9 @@ kubectl logs -n kubesphere-system $(kubectl get pod -n kubesphere-system -l app=
 ```
 
 通过 `http://{IP}:30880` 使用默认帐户和密码 `admin/P@88w0rd` 访问 KubeSphere 的 Web 控制台。
+
+
+
+
+
+### Rancher

@@ -1,0 +1,21 @@
+---
+- name: 安装所需软件包
+  hosts: all
+  gather_facts: false
+  become: true
+
+  tasks:
+    - name: 安装软件包
+      dnf:
+        name:
+          - socat
+          - conntrack
+          - ebtables
+          - ipset
+          - ipvsadm
+          - bash-completion
+          - openssl
+          - openssl-devel
+          - vim
+          - telnet
+        state: present

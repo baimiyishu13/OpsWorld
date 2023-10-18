@@ -1,0 +1,17 @@
+---
+- name: 修改系统配置
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: 修改sysctl.conf文件
+      blockinfile:
+        path: /etc/sysctl.conf
+        block: |
+          net.bridge.bridge-nf-call-ip6tables = 1
+          net.bridge.bridge-nf-call-iptables = 1
+          vm.swappiness = 0
+          net.core.somaxconn = 32768
+          fs.inotify.max_user_watches = 2097152
+    - name: 加载新的sysctl配置
+      shell: /usr/sbin/sysctl -p

@@ -1,0 +1,30 @@
+---
+- name: 关闭SELinux、Swap和防火墙
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: 关闭SELinux
+      selinux:
+        state: disabled
+
+    - name: 修改SELinux配置文件
+      lineinfile:
+        dest: /etc/selinux/config
+        regexp: '^SELINUX='
+        line: 'SELINUX=disabled'
+
+    - name: 禁用Swap
+      shell: swapoff -a
+
+    - name: 永久禁用Swap
+      lineinfile:
+        dest: /etc/fstab
+        state: absent
+        regexp: '^.*\sswap\s.*$'
+
+    - name: 停止并禁用防火墙  # 可能并无firewalld服务，默认禁用
+      service:
+        name: firewalld
+        state: stopped
+        enabled: no

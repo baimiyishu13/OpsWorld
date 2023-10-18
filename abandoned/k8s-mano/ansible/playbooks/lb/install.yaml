@@ -1,0 +1,23 @@
+- name: 安装 HAProxy 和 Keepalived
+  hosts: all
+  become: true
+  tasks:
+    - name: 安装必要的软件包
+      package:
+        name:
+          - haproxy
+          - keepalived
+        state: present
+
+    - name: 启动并设置自启动 HAProxy
+      service:
+        name: haproxy
+        state: started
+        enabled: true
+
+    - name: 启动并设置自启动 Keepalived
+      service:
+        name: keepalived
+        state: started
+        enabled: true
+
